@@ -13,6 +13,10 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import com.enterprise.poc.Application;
+import com.enterprise.poc.ihm.Visualisation;
+import com.enterprise.poc.jap.MaPersisance;
+
 /**
  * @author Mickael
  *
@@ -74,6 +78,12 @@ public class JObjectsLogFormatterTest {
    */
   @Test
   public void testFormatLogRecord1() {
+    Application app = new Application();
+    app.methodeC();
+    Visualisation visu = new Visualisation();
+    visu.methodeB();
+    MaPersisance pers = new MaPersisance();
+    pers.methodeA();
     LOGGER.severe("setUpBeforeClass()");
   }
 
