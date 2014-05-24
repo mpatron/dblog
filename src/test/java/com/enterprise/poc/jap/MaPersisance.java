@@ -3,7 +3,7 @@ package com.enterprise.poc.jap;
 import java.util.logging.Logger;
 
 public class MaPersisance {
-  private static Logger LOGGER = Logger.getLogger(MaPersisance.class.getCanonicalName());
+  private static Logger LOGGER = Logger.getLogger(MaPersisance.class.getName());
 
   public MaPersisance() {
     LOGGER.info("new MaPersisance");

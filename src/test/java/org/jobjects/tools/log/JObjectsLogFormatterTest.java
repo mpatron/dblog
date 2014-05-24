@@ -63,6 +63,7 @@ public class JObjectsLogFormatterTest {
   @Test
   public void testFormatLogRecord() {
     LOGGER.severe("setUpBeforeClass()");
+    JObectsLogFilterConfiguration.getInstance().show();
   }
 
   /**

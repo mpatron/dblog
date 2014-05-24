@@ -3,7 +3,7 @@ package com.enterprise.poc.ihm;
 import java.util.logging.Logger;
 
 public class Visualisation {
-  private static Logger LOGGER = Logger.getLogger(Visualisation.class.getCanonicalName());
+  private static Logger LOGGER = Logger.getLogger(Visualisation.class.getName());
   public Visualisation() {
     LOGGER.info("new MaPersisance");
   }
