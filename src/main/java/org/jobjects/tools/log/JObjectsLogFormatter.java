@@ -1,19 +1,35 @@
 package org.jobjects.tools.log;
 
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Locale;
 import java.util.logging.Formatter;
+import java.util.logging.LogManager;
 import java.util.logging.LogRecord;
+import java.util.logging.Logger;
+
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.exception.ExceptionUtils;
 
 public class JObjectsLogFormatter extends Formatter {
   public final static String ISO8601DATEFORMAT = "yyyy-MM-dd'T'HH:mm:ssZ";
   public final static String VERYSMAL = "h:mm:ss";
   private static final DateFormat format = new SimpleDateFormat(ISO8601DATEFORMAT);
+
+  /**
+   * Attention, il faut rendre la methode appelable 1 fois.
+   */
+  public static void initializeLogging() {
+    final String filePathnameLogging = "/org/jobjects/tools/log/logging.properties";
+    try (InputStream is = JObjectsLogFormatter.class.getResourceAsStream(filePathnameLogging)) {
+      LogManager.getLogManager().readConfiguration(is);
+      Logger.getLogger(JObjectsLogFormatter.class.getName()).config("Chargement realisé de " + filePathnameLogging);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+  }
 
   @Override
   public String format(LogRecord record) {
@@ -21,56 +37,26 @@ public class JObjectsLogFormatter extends Formatter {
     if (loggerName == null) {
       loggerName = "root";
     }
-    StringBuilder output = new StringBuilder();
-    java.util.Formatter formatter = new java.util.Formatter(output, Locale.FRENCH);
-    output.append("[");
-    formatter.format("%-7s", record.getLevel());
-    formatter.close();
-    output.append(" - ");
-    // .append(Thread.currentThread().getName()).append('|')
-    output.append(format.format(new Date(record.getMillis())));
-    output.append("] ");
-    output.append(record.getSourceClassName() + "#" + record.getSourceMethodName());
 
-    output.append(" : ");
+    StringBuilder output = new StringBuilder().append(StringUtils.rightPad("[" + record.getLevel().getName() + "]", 9))
+        // .append(Thread.currentThread().getName()).append('|')
+        // .append(" ").append(loggerName).append(" ")
+        .append(" " + format.format(new Date(record.getMillis()))).append(" : ").append("..."
+            + StringUtils.substringAfterLast(record.getSourceClassName(), "org.jobjects.") + "." + record.getSourceMethodName() + "()")
+        .append(" : ");
 
     if (record.getParameters() != null) {
-      try {
-        output.append(MessageFormat.format(record.getMessage(), record.getParameters()));
-      } catch (Throwable t) {
-        output.append(record.getMessage());
-        output.append("[Internal log error :" + t.getMessage() + "]");
-      }
+      output.append(MessageFormat.format(record.getMessage(), record.getParameters()));
     } else {
       output.append(record.getMessage());
     }
 
     if (record.getThrown() != null) {
       output.append(System.lineSeparator());
-      output.append(stackTraceToString(record.getThrown()));
+      output.append(ExceptionUtils.getStackTrace(record.getThrown()));
     }
 
     output.append(System.lineSeparator());
     return output.toString();
   }
-
-  protected String stackTraceToString(Throwable e) {
-    String returnValue = null;
-    if (null != e) {
-      StringWriter sw = null;
-      try {
-        sw = new StringWriter();
-        PrintWriter pw = new PrintWriter(sw);
-        e.printStackTrace(pw);
-        pw.flush();
-        returnValue = sw.toString();
-        pw.close();
-        sw.close();
-      } catch (Throwable t) {
-        returnValue = "Log internal error and " + e.getMessage();
-      }
-    }
-    return returnValue;
-  }
-
 }

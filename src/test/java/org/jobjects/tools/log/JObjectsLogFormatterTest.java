@@ -3,8 +3,7 @@
  */
 package org.jobjects.tools.log;
 
-import static org.junit.Assert.fail;
-
+import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.junit.After;
@@ -110,6 +109,24 @@ public class JObjectsLogFormatterTest {
   @Test
   public void testFormatMessage() {
     LOGGER.severe("setUpBeforeClass()");
+  }
+
+  @Test
+  public void testLogRecord() {
+    JObjectsLogFormatter.initializeLogging();
+    LOGGER.entering(getClass().getName(), "testLogRecord => LOGGER.entering");
+
+    LOGGER.finest("Le mega fin.");
+    LOGGER.finer("Le plus fin.");
+    LOGGER.fine("Le fin.");
+    LOGGER.config("Mode configuration");
+    LOGGER.info("Dernière news !");
+    LOGGER.warning("Attention");
+    LOGGER.severe("Une exception en text court.");
+    IllegalArgumentException iae = new IllegalArgumentException("Tout va bien. !!!! Exception désirée afin de montrer sa trace dans les logs !!!!");
+    LOGGER.log(Level.SEVERE, iae.getMessage(), iae);
+
+    LOGGER.exiting(getClass().getName(), "testLogRecord => LOGGER.exiting");
   }
 
 }
